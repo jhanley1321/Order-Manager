@@ -1,36 +1,47 @@
 from order_manager import OrderManager, OrderConfig
 
 def main():
-    # Create an order manager
+    # Create order manager (will create Data folder if it doesn't exist)
     manager = OrderManager()
 
-    # Create a Bitcoin order configuration
-    config = OrderConfig(
-        asset_name="Bitcoin",
-        asset_type="Crypto",
-        asset_pair="BTC/USD",
-        order_quantity=0.5,
-        order_price=50000.00,
-        base_currency="USD"
+    # Create and add first order
+    order1_config = OrderConfig(
+        ticker_id=1001,
+        order_quantity=100,
+        order_price=50.00
     )
+    manager.add_order(order1_config)
 
-    # Add the order and display all orders
-    manager.add_order(config)
-
-    # Add another order for demonstration
-    eth_config = OrderConfig(
-        asset_name="Ethereum",
-        asset_type="Crypto",
-        asset_pair="ETH/USD",
-        order_quantity=2.0,
-        order_price=3000.00,
-        base_currency="USD"
+    # Create and add second order
+    order2_config = OrderConfig(
+        ticker_id=2001,
+        order_quantity=200,
+        order_price=75.00
     )
-    manager.add_order(eth_config)
+    manager.add_order(order2_config)
 
-    # List all orders
-    print("\nCurrent Orders:")
+    # Add fills to first order until it's complete
+    manager.fill_order(order_number=1, fill_price=49.95, fill_quantity=60)
+    manager.fill_order(order_number=1, fill_price=50.05, fill_quantity=40)  # This will complete the order
+
+    # Try to add another fill to the completed order (will be ignored)
+    manager.fill_order(order_number=1, fill_price=50.10, fill_quantity=10)
+
+    # Add partial fill to second order
+    manager.fill_order(order_number=2, fill_price=74.95, fill_quantity=100)
+
+    # Display final order status
+    print("\nAll Orders:")
     manager.list_orders()
+
+    # Display only orders that still need fills
+    open_orders = manager.get_open_orders()
+    print("\nOrders still needing fills:")
+    for order in open_orders:
+        print(f"Order #{order.order_number} - {order.status.value} - Remaining: {order.remaining_quantity}")
+
+    # Save orders to file at the end of the session
+    manager.save_orders()
 
 if __name__ == "__main__":
     main()
