@@ -1,3 +1,4 @@
+# order_manager.py
 from dataclasses import dataclass
 from typing import List
 import logging
@@ -208,3 +209,21 @@ class OrderManager:
         with open(file_path, 'w') as file:
             json.dump(orders_data, file, indent=4)
         logger.info(f"Orders saved to {file_path}")
+
+
+def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
+    """
+    Wrapper function to run the order manager with a list of orders
+
+    Args:
+        orders_to_process: List of OrderConfig objects to process
+
+    Returns:
+        OrderManager: The manager instance with processed orders
+    """
+    manager = OrderManager()
+
+    for order_config in orders_to_process:
+        manager.add_order(order_config)
+
+    return manager

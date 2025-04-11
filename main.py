@@ -1,47 +1,39 @@
-from order_manager import OrderManager, OrderConfig
+# main.py
+from order_management.order_manager import OrderManager, OrderConfig
+from trading_platforms.alpaca_manager import AlpacaManager, AlpacaConfig
+from bridge.trading_bridge import TradingBridge
+import os
 
 def main():
-    # Create order manager (will create Data folder if it doesn't exist)
-    manager = OrderManager()
+    # 1. Initialize components
+    order_manager = OrderManager()
 
-    # Create and add first order
-    order1_config = OrderConfig(
-        ticker_id=1001,
-        order_quantity=100,
-        order_price=50.00
+    alpaca_config = AlpacaConfig(
+        api_key=os.getenv('ALPACA_MARKETS_API_KEY_TEST'),
+        secret_key=os.getenv('ALPACA_MARKETS_SECRET_KEY_TEST'),
+        paper_trading=True
     )
-    manager.add_order(order1_config)
+    alpaca_manager = AlpacaManager(alpaca_config)
 
-    # Create and add second order
-    order2_config = OrderConfig(
-        ticker_id=2001,
-        order_quantity=200,
-        order_price=75.00
-    )
-    manager.add_order(order2_config)
+    trading_bridge = TradingBridge(order_manager, alpaca_manager)
 
-    # Add fills to first order until it's complete
-    manager.fill_order(order_number=1, fill_price=49.95, fill_quantity=60)
-    manager.fill_order(order_number=1, fill_price=50.05, fill_quantity=40)  # This will complete the order
+    # 2. Place an order through the bridge
+    try:
+        alpaca_order_id = trading_bridge.place_order(
+            ticker_id=1001,
+            symbol="AAPL",
+            quantity=1,
+            side="buy",
+            price=150.00  # Example price
+        )
+        print(f"Order placed successfully, Alpaca order ID: {alpaca_order_id}")
 
-    # Try to add another fill to the completed order (will be ignored)
-    manager.fill_order(order_number=1, fill_price=50.10, fill_quantity=10)
+        # 3. Display orders
+        order_manager.list_orders()
+        order_manager.save_orders()
 
-    # Add partial fill to second order
-    manager.fill_order(order_number=2, fill_price=74.95, fill_quantity=100)
-
-    # Display final order status
-    print("\nAll Orders:")
-    manager.list_orders()
-
-    # Display only orders that still need fills
-    open_orders = manager.get_open_orders()
-    print("\nOrders still needing fills:")
-    for order in open_orders:
-        print(f"Order #{order.order_number} - {order.status.value} - Remaining: {order.remaining_quantity}")
-
-    # Save orders to file at the end of the session
-    manager.save_orders()
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
