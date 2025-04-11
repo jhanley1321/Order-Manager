@@ -4,7 +4,7 @@
         "ticker_id": 1001,
         "original_quantity": 1,
         "order_price": 150.0,
-        "created_at": "2025-04-11 07:19:29.967825",
+        "created_at": "2025-04-11 08:30:19.447797",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,

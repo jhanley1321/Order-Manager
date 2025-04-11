@@ -59,3 +59,25 @@ class AlpacaManager:
         except Exception as e:
             logger.error(f"Error placing order: {e}")
             raise
+
+    # Testing 
+    def get_order_status(self, alpaca_order_id: str) -> dict:
+            """
+            Fetch the status of an order from Alpaca.
+
+            Args:
+                alpaca_order_id: The ID of the order in Alpaca.
+
+            Returns:
+                dict: A dictionary containing the order status, filled quantity, and average fill price.
+            """
+            try:
+                order = self.trading_client.get_order_by_id(alpaca_order_id)
+                return {
+                    "status": order.status,  # e.g., 'filled', 'partially_filled'
+                    "filled_qty": float(order.filled_qty),
+                    "avg_fill_price": float(order.filled_avg_price) if order.filled_avg_price else 0.0
+                }
+            except Exception as e:
+                logger.error(f"Error fetching order status from Alpaca: {e}")
+                raise
