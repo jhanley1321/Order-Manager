@@ -1,72 +1,72 @@
-import os
-import logging
-from order_management.order_manager import OrderManager
-from trading_platforms.alpaca_manager import AlpacaManager, AlpacaConfig
-from bridge.trading_bridge import TradingBridge
+# main.py
+from order_manager import OrderManager, OrderConfig, OrderStatus
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def initialize_alpaca_manager():
+def main():
     """
-    Initialize and return the AlpacaManager with configuration.
+    Main function to demonstrate the OrderManager functionality
     """
-    # Get Alpaca credentials from environment variables
-    api_key = os.getenv('ALPACA_MARKETS_API_KEY_TEST')
-    secret_key = os.getenv('ALPACA_MARKETS_SECRET_KEY_TEST')
+    print("Order Manager Demo")
+    print("-----------------\n")
+    
+    # Create an order manager
+    manager = OrderManager()
+    
+    # Create some sample orders
+    orders = [
+        OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.25),
+        OrderConfig(ticker_id=1002, order_quantity=200, order_price=75.50),
+        OrderConfig(ticker_id=1003, order_quantity=150, order_price=32.75)
+    ]
+    
+    # Add orders to the manager
+    added_orders = []
+    print("Creating orders...")
+    for config in orders:
+        order = manager.add_order(config)
+        added_orders.append(order)
+        print(f"Created Order #{order.order_number}: {order.quantity} shares of ticker {order.ticker_id} @ ${order.order_price:.2f}")
+    
+    print("\nList of all orders:")
+    manager.list_orders()
+    
+    # Fill some orders
+    print("\nFilling orders...")
+    
+    # Partially fill the first order
+    order1 = added_orders[0]
+    fill_price1 = order1.order_price - 0.15  # Fill slightly below order price
+    fill_qty1 = order1.quantity * 0.6  # Fill 60% of the order
+    manager.fill_order(order1.order_number, fill_price1, fill_qty1)
+    print(f"Filled {fill_qty1} shares of Order #{order1.order_number} @ ${fill_price1:.2f}")
+    
+    # Complete the fill for the first order
+    fill_price2 = order1.order_price + 0.10  # Fill slightly above order price
+    fill_qty2 = order1.remaining_quantity  # Fill the rest
+    manager.fill_order(order1.order_number, fill_price2, fill_qty2)
+    print(f"Filled {fill_qty2} shares of Order #{order1.order_number} @ ${fill_price2:.2f}")
+    
+    # Partially fill the second order
+    order2 = added_orders[1]
+    fill_price3 = order2.order_price - 0.25
+    fill_qty3 = order2.quantity * 0.4  # Fill 40% of the order
+    manager.fill_order(order2.order_number, fill_price3, fill_qty3)
+    print(f"Filled {fill_qty3} shares of Order #{order2.order_number} @ ${fill_price3:.2f}")
+    
+    # Display the updated orders
+    print("\nUpdated list of all orders:")
+    manager.list_orders()
+    
+    # Show open orders
+    open_orders = manager.get_open_orders()
+    print(f"\nThere are {len(open_orders)} open orders remaining")
+    for order in open_orders:
+        print(f"Order #{order.order_number}: {order.remaining_quantity} shares remaining to fill")
+    
+    # Save orders to disk
+    manager.save_orders()
+    print("\nOrders saved to disk")
+    
+    print("\nOrder Manager Demo completed")
 
-    if not api_key or not secret_key:
-        raise ValueError("Alpaca API keys not found in environment variables")
-
-    # Initialize AlpacaManager
-    alpaca_config = AlpacaConfig(
-        api_key=api_key,
-        secret_key=secret_key,
-        paper_trading=True
-    )
-    alpaca_manager = AlpacaManager(alpaca_config)
-    logger.info("AlpacaManager initialized")
-    return alpaca_manager
-
-async def main():
-    """
-    Main async function that orchestrates the trading system.
-    """
-    order_manager = OrderManager()
-    try:
-        alpaca_manager = initialize_alpaca_manager()
-        trading_bridge = TradingBridge(order_manager, alpaca_manager)
-        logger.info("TradingBridge initialized")
-
-        # Example: Place an order
-        alpaca_order_id = trading_bridge.place_order(
-            ticker_id=1001,
-            symbol="AAPL",
-            quantity=1,
-            side="buy",
-            price=150.00
-        )
-        logger.info(f"Order placed successfully, Alpaca order ID: {alpaca_order_id}")
-
-    except Exception as e:
-        logger.error(f"Error in main: {e}")
-    finally:
-        order_manager.save_orders()
-        logger.info("Orders saved successfully")
-
-def run():
-    """
-    Entry point for the application.
-    """
-    import asyncio
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("Application shutdown by user")
-    except Exception as e:
-        logger.error(f"Application error: {e}")
-
-# Ensure the script runs only when executed directly
 if __name__ == "__main__":
-    run()
+    main()

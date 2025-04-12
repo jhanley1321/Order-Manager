@@ -1,6 +1,6 @@
 # tests/test_order_manager.py
 import unittest
-from order_management.order_manager import OrderManager, OrderConfig, OrderStatus
+from order_manager import OrderManager, OrderConfig, OrderStatus
 import os
 import shutil
 
