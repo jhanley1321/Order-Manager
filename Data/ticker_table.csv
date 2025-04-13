@@ -1,0 +1,3 @@
+ticker_id,ticker,name,ticker_type
+1001,AAPL,Apple,stocks
+1,BTC,Bitcoin,crypto

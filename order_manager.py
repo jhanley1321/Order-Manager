@@ -119,11 +119,15 @@ class OrderManager:
 
     def __init__(self, data_folder: str = "Data"):
         self.orders: List[Order] = []
-        self.next_order_number = 1
+        self.next_order_number = 1  # Default to 1 for new instances with no orders
         self.data_folder = data_folder
         self._ensure_data_folder_exists()
         logger.info("OrderManager created")
-
+        
+        # Automatically load orders when creating the manager
+        # This ensures we have the correct next_order_number right from initialization
+        self.load_orders()
+    
     def __del__(self):
         logger.info("OrderManager destroyed")
 
@@ -209,6 +213,74 @@ class OrderManager:
         with open(file_path, 'w') as file:
             json.dump(orders_data, file, indent=4)
         logger.info(f"Orders saved to {file_path}")
+
+
+
+    # order_manager.py
+    # Add this method to the OrderManager class
+
+    def load_orders(self, filename: str = "orders.json") -> bool:
+        """
+        Load orders from a JSON file in the data folder
+        
+        Args:
+            filename: The name of the JSON file containing saved orders
+        
+        Returns:
+            bool: True if orders were loaded, False otherwise
+        """
+        file_path = os.path.join(self.data_folder, filename)
+        
+        if not os.path.exists(file_path):
+            logger.info(f"No saved orders file found at {file_path}")
+            return False
+        
+        try:
+            with open(file_path, 'r') as file:
+                orders_data = json.load(file)
+            
+            logger.info(f"Loading {len(orders_data)} previously saved orders...")
+            
+            # Find the highest order number in the saved orders
+            highest_order_num = 0
+            
+            for order_data in orders_data:
+                config = OrderConfig(
+                    ticker_id=order_data["ticker_id"],
+                    order_quantity=order_data["original_quantity"],
+                    order_price=order_data["order_price"]
+                )
+                
+                # Create a new order with the saved order number
+                order_num = order_data["order_number"]
+                new_order = Order(order_num, config)
+                
+                # Add fills by directly adding to the fills list
+                for fill_data in order_data["fills"]:
+                    fill_price = fill_data["fill_price"]
+                    fill_quantity = fill_data["fill_quantity"]
+                    
+                    # Add fill directly to the list to bypass validation
+                    new_order.fills.append(OrderFill(fill_price, fill_quantity))
+                
+                # Force status update
+                new_order._update_status()
+                
+                # Add the order to our manager
+                self.orders.append(new_order)
+                
+                # Keep track of the highest order number
+                highest_order_num = max(highest_order_num, order_num)
+            
+            # Set the next order number
+            self.next_order_number = highest_order_num + 1
+            logger.info(f"Successfully loaded {len(orders_data)} orders.")
+            logger.info(f"Next order number will be {self.next_order_number}")
+            return True
+        
+        except Exception as e:
+            logger.error(f"Error loading orders: {e}")
+            return False
 
 
 def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
