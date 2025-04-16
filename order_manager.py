@@ -35,16 +35,15 @@ class OrderFill:
 class Order:
     """Represents a single trading order"""
 
-    def __init__(self, order_number: int, config: OrderConfig):
-        self.order_number = order_number
+    def __init__(self, config: OrderConfig):
         self.config = config
         self.created_at = datetime.now()
         self.fills: List[OrderFill] = []
         self._status = OrderStatus.OPEN
-        logger.info(f"Order #{self.order_number} created with status: {self._status.value}")
+        logger.info(f"Order created with status: {self._status.value}")
 
     def __del__(self):
-        logger.info(f"Order #{self.order_number} destroyed")
+        logger.info("Order destroyed")
 
     @property
     def status(self) -> OrderStatus:
@@ -95,7 +94,7 @@ class Order:
         """Updates the order status based on fills"""
         if self.filled_quantity >= self.quantity:
             self._status = OrderStatus.FILLED
-            logger.info(f"Order #{self.order_number} is now completely filled")
+            logger.info(f"Order is now completely filled")
         elif self.fills:
             self._status = OrderStatus.PARTIALLY_FILLED
         else:
@@ -104,7 +103,7 @@ class Order:
     def add_fill(self, price: float, quantity: float) -> None:
         """Adds a new fill to the order"""
         if not self.needs_fills:
-            raise ValueError(f"Order #{self.order_number} is already completely filled")
+            raise ValueError("Order is already completely filled")
 
         if quantity > self.remaining_quantity:
             raise ValueError(f"Fill quantity ({quantity}) exceeds remaining quantity ({self.remaining_quantity})")
@@ -112,7 +111,7 @@ class Order:
         fill = OrderFill(price, quantity)
         self.fills.append(fill)
         self._update_status()
-        logger.info(f"Order #{self.order_number} received fill: {quantity} @ {price}. Status: {self._status.value}")
+        logger.info(f"Order received fill: {quantity} @ {price}. Status: {self._status.value}")
 
 class OrderManager:
     """Manages a collection of trading orders"""
@@ -123,11 +122,11 @@ class OrderManager:
         self.data_folder = data_folder
         self._ensure_data_folder_exists()
         logger.info("OrderManager created")
-        
+
         # Automatically load orders when creating the manager
         # This ensures we have the correct next_order_number right from initialization
         self.load_orders()
-    
+
     def __del__(self):
         logger.info("OrderManager destroyed")
 
@@ -138,7 +137,7 @@ class OrderManager:
 
     def add_order(self, config: OrderConfig) -> Order:
         """Creates and adds a new order with the given configuration"""
-        new_order = Order(self.next_order_number, config)
+        new_order = Order(config)
         self.orders.append(new_order)
         logger.info(f"Added Order #{self.next_order_number}")
         self.next_order_number += 1
@@ -147,7 +146,7 @@ class OrderManager:
     def get_order(self, order_number: int) -> Order:
         """Retrieves an order by its order number"""
         for order in self.orders:
-            if order.order_number == order_number:
+            if order_number == self.orders.index(order) + 1:
                 return order
         raise ValueError(f"Order #{order_number} not found")
 
@@ -166,7 +165,8 @@ class OrderManager:
     def list_orders(self) -> None:
         """Prints all current orders"""
         for order in self.orders:
-            print(f"\nOrder #{order.order_number}:")
+            order_number = self.orders.index(order) + 1
+            print(f"\nOrder #{order_number}:")
             print(f"  Ticker ID: {order.ticker_id}")
             print(f"  Original Quantity: {order.quantity}")
             print(f"  Order Price: {order.order_price}")
@@ -189,7 +189,7 @@ class OrderManager:
 
         for order in self.orders:
             order_data = {
-                "order_number": order.order_number,
+                "order_number": self.orders.index(order) + 1,
                 "ticker_id": order.ticker_id,
                 "original_quantity": order.quantity,
                 "order_price": order.order_price,
@@ -212,86 +212,79 @@ class OrderManager:
 
         with open(file_path, 'w') as file:
             json.dump(orders_data, file, indent=4)
-        logger.info(f"Orders saved to {file_path}")
-
-
-
-    # order_manager.py
-    # Add this method to the OrderManager class
+            logger.info(f"Orders saved to {file_path}")
 
     def load_orders(self, filename: str = "orders.json") -> bool:
         """
         Load orders from a JSON file in the data folder
-        
+
         Args:
-            filename: The name of the JSON file containing saved orders
-        
+        filename: The name of the JSON file containing saved orders
+
         Returns:
-            bool: True if orders were loaded, False otherwise
+        bool: True if orders were loaded, False otherwise
         """
         file_path = os.path.join(self.data_folder, filename)
-        
+
         if not os.path.exists(file_path):
             logger.info(f"No saved orders file found at {file_path}")
             return False
-        
+
         try:
             with open(file_path, 'r') as file:
                 orders_data = json.load(file)
-            
+
             logger.info(f"Loading {len(orders_data)} previously saved orders...")
-            
+
             # Find the highest order number in the saved orders
             highest_order_num = 0
-            
+
             for order_data in orders_data:
                 config = OrderConfig(
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
                     order_price=order_data["order_price"]
                 )
-                
+
                 # Create a new order with the saved order number
-                order_num = order_data["order_number"]
-                new_order = Order(order_num, config)
-                
+                new_order = Order(config)
+
                 # Add fills by directly adding to the fills list
                 for fill_data in order_data["fills"]:
                     fill_price = fill_data["fill_price"]
                     fill_quantity = fill_data["fill_quantity"]
-                    
+
                     # Add fill directly to the list to bypass validation
                     new_order.fills.append(OrderFill(fill_price, fill_quantity))
-                
+
                 # Force status update
                 new_order._update_status()
-                
+
                 # Add the order to our manager
                 self.orders.append(new_order)
-                
+
                 # Keep track of the highest order number
-                highest_order_num = max(highest_order_num, order_num)
-            
+                highest_order_num = max(highest_order_num, order_data["order_number"])
+
             # Set the next order number
             self.next_order_number = highest_order_num + 1
             logger.info(f"Successfully loaded {len(orders_data)} orders.")
             logger.info(f"Next order number will be {self.next_order_number}")
             return True
-        
+
         except Exception as e:
             logger.error(f"Error loading orders: {e}")
             return False
-
 
 def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
     """
     Wrapper function to run the order manager with a list of orders
 
     Args:
-        orders_to_process: List of OrderConfig objects to process
+    orders_to_process: List of OrderConfig objects to process
 
     Returns:
-        OrderManager: The manager instance with processed orders
+    OrderManager: The manager instance with processed orders
     """
     manager = OrderManager()
 

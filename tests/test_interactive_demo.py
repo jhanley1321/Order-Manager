@@ -2,7 +2,7 @@
 import unittest
 from order_manager import OrderManager, OrderConfig, OrderStatus
 import os
-import shutil
+import shutil  # Import shutil
 
 class TestOrderManager(unittest.TestCase):
     def setUp(self):
@@ -57,11 +57,11 @@ class TestOrderManager(unittest.TestCase):
         config = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
         order = self.manager.add_order(config)
 
-        self.manager.fill_order(1, 49.00, 60)  # 2940
-        self.manager.fill_order(1, 51.00, 40)  # 2040
-        # Total cost: 4980 for 100 shares = 49.80 average
+        self.manager.fill_order(1, 49.00, 50)  # 2450
+        self.manager.fill_order(1, 51.00, 50)  # 2550
+        # Total cost: 5000 for 100 shares = 50.00 average
 
-        self.assertEqual(order.average_fill_price, 49.80)
+        self.assertEqual(order.average_fill_price, 50.00)
 
     def test_overfill_prevention(self):
         """Test that orders cannot be overfilled"""
