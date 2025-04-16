@@ -1,0 +1,84 @@
+# Introduction (Optional, feel free to skip)
+
+Welcome to my first public project! I decided to make this repo because most of my work is confidential for clients, and I can't release those projects. Most of my personal projects were built for my own learning and use, so rather than converting them into public projects, I figured it would be better to just start a new one.
+
+I've decided to build something to showcase my skills and serve as an example for anyone out there who might be trying to learn or improve their own projects. I will be taking a microservices approach, so you can expect modular and scalable components. This also means that you will need to check the other repos to really get the most out of what I’m doing here. For example, after I get orders working and so forth, we'll focus on setting up some analytics, most likely with a separate repo that focuses solely on analyzing that data.
+
+You might be wondering: if I'm mainly a data analyst, why wouldn't the first thing I start with focus on analytics? As much as I love starting up a notebook, building dashboards, and creating machine learning models, none of this really means much if it doesn't actually solve a problem. Instead, we will start with a problem, and use analytics as a solution. Our problem is, while we can make trades on different assets, we don't know what to trade, when to trade it, or how much to trade. So, we will first build out a platform to make this possible, and then we will build data oriented solutions. If it isn't clear, we will need to do some kind of analysis to determine what to buy or sell, how much, and when. We will then take that analysis a step further and attempt to automate as much of this as possible.
+
+You should expect more repos and functionality from me, but please keep in mind, this is very much a work in progress. You should expect a lack of documentation at first, and sometimes best practices will be skipped for the sake of getting things working faster. However, I fully plan to come back and fix this later, as the end goal is to have a fully production ready project. There’s going to be a lot of learning as we go, but eventually it will be fully production ready.
+
+If you have any questions, concerns, tips, or feedback, feel free to reach out to me.
+
+# Problem Statement
+
+Making orders across multiple exchanges and asset classes, and switching between live and paper accounts, can be cumbersome.
+
+# Solution
+
+Build a unified order management system that can track and manage orders across all exchanges and asset classes, and can switch between live and paper accounts as needed.
+
+# Scope
+
+Though we will build this to be interoperable with other programs later, the main focus of this program is only order management.  
+We are not concerned with portfolio management, strategies, or anything else, only being able to place and manage our orders.
+
+# Purpose
+
+This program manages orders across multiple exchanges and platforms. It can be used to place orders across multiple exchanges, and you will be able to place orders on paper or live accounts.  
+I also want to showcase my skills and resourcefulness. Generally, while I will be building this entirely myself, if there is an easier, ready made solution, I will use that and focus on how I can add value. In some cases, such as the order manager, intimately understanding the architecture is important.
+
+# Current Features
+
+* Place orders (buy or sell, market orders only for now)
+* Track active orders, including which ones are open, partially filled, or filled
+* Demo module that lets you simulate orders and even randomize order fills
+* Control how long and how much of an order is filled
+
+# Features Roadmap
+
+* Manage orders from multiple exchanges
+* Manage account types (Live, Paper)
+
+
+# Conventional Commit Types
+
+## 🔧 Core Conventional Commit Types
+
+| Type       | Description                                                                       |
+|------------|-----------------------------------------------------------------------------------|
+| **feat**   | A new feature                                                                     |
+| **fix**    | A bug fix                                                                         |
+| **docs**   | Documentation only changes                                                        |
+| **style**  | Changes that do not affect the meaning of the code (white-space, formatting, etc) |
+| **refactor** | A code change that neither fixes a bug nor adds a feature                       |
+| **perf**   | A code change that improves performance                                           |
+| **test**   | Adding or correcting tests                                                        |
+| **build**  | Changes that affect the build system or external dependencies (e.g., npm)         |
+| **ci**     | Changes to CI configuration files and scripts (e.g., GitHub Actions, Travis)      |
+| **chore**  | Other changes that don’t modify src or test files (e.g., release notes, configs)  |
+| **revert** | Reverts a previous commit                                                         | 
+
+## 🧪 Extended/Optional Types
+
+| Type          | Description                                                         |
+|---------------|---------------------------------------------------------------------|
+| **wip**       | Work in progress; not ready for production                          |
+| **merge**     | A merge commit                                                      |
+| **hotfix**    | A quick fix for a critical issue                                    |
+| **security**  | Security-related changes                                            |
+| **deps**      | Updating or pinning dependencies                                    |
+| **infra**     | Infrastructure-related changes (e.g., Terraform, Dockerfiles)       |
+| **ux**        | Changes affecting user experience (not necessarily features)        |
+| **i18n**      | Internationalization and localization changes                       |
+| **release**   | Version bumps, changelog updates, tagging, etc.                     |
+| **env**       | Environment-related changes (e.g., `.env` files, deployment configs)|
+
+## 📚 Optional Scopes
+
+You can add an optional scope in parentheses to clarify what part of the app is affected:
+
+
+
+
+
