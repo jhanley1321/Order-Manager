@@ -4,10 +4,6 @@ Welcome to my first public project! I decided to make this repo because most of 
 
 I've decided to build something to showcase my skills and serve as an example for anyone out there who might be trying to learn or improve their own projects. I will be taking a microservices approach, so you can expect modular and scalable components. This also means that you will need to check the other repos to really get the most out of what I’m doing here. For example, after I get orders working and so forth, we'll focus on setting up some analytics, most likely with a separate repo that focuses solely on analyzing that data.
 
-You might be wondering: if I'm mainly a data analyst, why wouldn't the first thing I start with focus on analytics? As much as I love starting up a notebook, building dashboards, and creating machine learning models, none of this really means much if it doesn't actually solve a problem. Instead, we will start with a problem, and use analytics as a solution. Our problem is, while we can make trades on different assets, we don't know what to trade, when to trade it, or how much to trade. So, we will first build out a platform to make this possible, and then we will build data oriented solutions. If it isn't clear, we will need to do some kind of analysis to determine what to buy or sell, how much, and when. We will then take that analysis a step further and attempt to automate as much of this as possible.
-
-You should expect more repos and functionality from me, but please keep in mind, this is very much a work in progress. You should expect a lack of documentation at first, and sometimes best practices will be skipped for the sake of getting things working faster. However, I fully plan to come back and fix this later, as the end goal is to have a fully production ready project. There’s going to be a lot of learning as we go, but eventually it will be fully production ready.
-
 If you have any questions, concerns, tips, or feedback, feel free to reach out to me.
 
 # Problem Statement
