@@ -1,70 +1,92 @@
 # interactive_demo.py
-import random
-import time
 import os
-import csv
-from order_manager import OrderManager, OrderConfig, OrderStatus, Order, OrderFill
+import time
+import random
+from order_manager import OrderManager, OrderConfig, OrderStatus
 
-def load_ticker_table(data_folder="Data"):
+def load_ticker_table(file_path: str) -> dict:
     """
-    Load the ticker table from CSV
+    Load the ticker table from CSV into a dictionary mapping
+
+    Args:
+        file_path: Path to ticker table CSV file
 
     Returns:
-    dict: Dictionary with lookup tables for ticker symbols and asset names
+        Dictionary containing ticker mappings
     """
-    ticker_map = {}
-    asset_name_map = {}
-
-    file_path = os.path.join(data_folder, "ticker_table.csv")
+    ticker_maps = {
+        "tickers": {},      # ticker symbol -> id
+        "names": {},        # asset name -> id
+        "ticker_types": {}, # ticker type -> id
+        "exchanges": {},    # exchange name -> id
+        "exchange_ids": {}  # exchange id -> ticker id
+    }
 
     if not os.path.exists(file_path):
         print(f"Warning: Ticker table not found at {file_path}")
-        return {"tickers": ticker_map, "names": asset_name_map}
+        return ticker_maps
 
     try:
-        with open(file_path, 'r') as file:
-            # Use csv.reader to handle the CSV format
-            reader = csv.reader(file)
-            # Skip header row
-            next(reader)
-            for row in reader:
-                if row and len(row) >= 3:
-                    ticker_id = int(row[0].strip())
-                    ticker = row[1].strip()
-                    asset_name = row[2].strip()
+        with open(file_path, 'r') as f:
+            for line in f:
+                fields = line.strip().split(',')
+                if len(fields) != 6:
+                    continue
 
-                    ticker_map[ticker.upper()] = ticker_id
-                    asset_name_map[asset_name.upper()] = ticker_id
+                ticker_id = int(fields[0])
+                ticker = fields[1].upper()
+                name = fields[2].upper()
+                ticker_type = fields[3].upper()
+                exchange = fields[4].upper()
+                exchange_id = int(fields[5])
 
-        print(f"Loaded {len(ticker_map)} tickers from ticker table")
-        return {"tickers": ticker_map, "names": asset_name_map}
+                ticker_maps["tickers"][ticker] = ticker_id
+                ticker_maps["names"][name] = ticker_id
+                ticker_maps["ticker_types"][ticker_type] = ticker_id
+                ticker_maps["exchanges"][exchange] = ticker_id
+                ticker_maps["exchange_ids"][exchange_id] = ticker_id
 
+        print(f"Loaded {len(ticker_maps['tickers'])} tickers")
+        return ticker_maps
     except Exception as e:
         print(f"Error loading ticker table: {e}")
-        return {"tickers": {}, "names": {}}
+        return ticker_maps
 
-def lookup_ticker_id(ticker_input, ticker_maps):
+def get_ticker_id(input_str: str, ticker_maps: dict) -> int:
+    """Get ticker ID from ticker symbol"""
+    input_str = input_str.upper()
+    return ticker_maps["tickers"].get(input_str)
+
+def get_exchange_id(input_str: str, ticker_maps: dict) -> int:
+    """Get exchange ID from exchange name"""
+    input_str = input_str.upper()
+    return ticker_maps["exchanges"].get(input_str)
+
+def lookup_ticker_id(input_str: str, ticker_maps: dict) -> int:
     """
-    Look up ticker ID from symbol or name
+    Look up ticker ID from ticker symbol, exchange name or asset name
 
     Args:
-    ticker_input: The user input (ticker symbol or asset name)
-    ticker_maps: Dictionary with ticker and name lookup tables
+        input_str: Input string to look up
+        ticker_maps: Dictionary of ticker mappings
 
     Returns:
-    int: The ticker ID if found, None otherwise
+        Ticker ID if found, None otherwise
     """
-    ticker_input = ticker_input.upper().strip()
+    input_str = input_str.upper()
 
-    # Check if input is a ticker symbol
-    if ticker_input in ticker_maps["tickers"]:
-        return ticker_maps["tickers"][ticker_input]
+    # Try ticker symbol first
+    if input_str in ticker_maps["tickers"]:
+        return ticker_maps["tickers"][input_str]
 
-    # Check if input is an asset name
-    if ticker_input in ticker_maps["names"]:
-        return ticker_maps["names"][ticker_input]
+    # Try exchange name
+    if input_str in ticker_maps["exchanges"]:
+        return ticker_maps["exchanges"][input_str]
 
-    # Not found
+    # Try asset name
+    if input_str in ticker_maps["names"]:
+        return ticker_maps["names"][input_str]
+
     return None
 
 def simulate_order_fills(manager, order, max_seconds=30):
