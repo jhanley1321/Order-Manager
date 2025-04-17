@@ -32,42 +32,45 @@ def run_order_manager_app():
         manager.save_orders("orders.json")  # Save the orders immediately after adding
         st.sidebar.success("Order added and saved successfully!")
 
+    # Sidebar for filling orders
+    st.sidebar.header("Fill an Order")
+    # Get list of open orders that need fills
+    open_orders = [order for order in manager.orders if order.needs_fills]
+    if open_orders:
+        order_options = [f"Order #{manager.orders.index(order) + 1} - Ticker {order.ticker_id}"
+                        for order in open_orders]
+        selected_order_idx = st.sidebar.selectbox("Select Order to Fill",
+                                                range(len(order_options)),
+                                                format_func=lambda x: order_options[x])
+
+        fill_quantity = st.sidebar.number_input("Fill Quantity",
+                                              min_value=0.0,
+                                              max_value=open_orders[selected_order_idx].remaining_quantity,
+                                              value=min(100.0, open_orders[selected_order_idx].remaining_quantity),
+                                              step=1.0)
+
+        fill_price = st.sidebar.number_input("Fill Price",
+                                           min_value=0.0,
+                                           value=open_orders[selected_order_idx].order_price,
+                                           step=0.01)
+
+        fill_order_button = st.sidebar.button("Fill Order")
+
+        if fill_order_button:
+            try:
+                selected_order = open_orders[selected_order_idx]
+                order_number = manager.orders.index(selected_order) + 1
+                # Remove the keyword arguments and pass them positionally
+                manager.fill_order(order_number, fill_price, fill_quantity)
+                manager.save_orders("orders.json")  # Save after filling
+                st.sidebar.success("Order filled successfully!")
+            except Exception as e:
+                st.sidebar.error(f"Error filling order: {str(e)}")
+    else:
+        st.sidebar.info("No orders available for filling")
+
     # Main content for listing orders
     st.header("Current Orders")
-    # if manager.orders:
-    #     # Create DataFrame for orders
-    #     orders_data = []
-    #     for order in manager.orders:
-    #         order_data = {
-    #             'Order #': manager.orders.index(order) + 1,
-    #             'Ticker ID': order.ticker_id,
-    #             'Exchange ID': order.exchange_id,
-    #             'Original Quantity': order.quantity,
-    #             'Order Price': order.order_price,
-    #             'Created At': order.created_at,
-    #             'Status': order.status.value,
-    #             'Needs Fills': 'Yes' if order.needs_fills else 'No',
-    #             'Filled Quantity': order.filled_quantity,
-    #             'Remaining Quantity': order.remaining_quantity,
-    #             'Average Fill Price': order.average_fill_price if order.fills else '-'
-    #         }
-    #         orders_data.append(order_data)
-
     df = manager.get_orders_as_dataframe()
     st.dataframe(df)
-
-
-
-    # # Save and load orders
-    # st.sidebar.header("Save and Load Orders")
-    # save_orders_button = st.sidebar.button("Save Orders")
-    # load_orders_button = st.sidebar.button("Load Orders")
-
-    # if save_orders_button:
-    #     manager.save_orders("orders.json")
-    #     st.sidebar.success("Orders saved successfully!")
-
-    # if load_orders_button:
-    #     manager.load_orders("orders.json")
-    #     st.sidebar.success("Orders loaded successfully!")
 
