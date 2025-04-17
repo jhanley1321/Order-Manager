@@ -1,3 +1,12 @@
+# Overview
+This project is an order management system built using a microservices architecture. It demonstrates placing and tracking orders, simulating order fills, and managing data storage and retrieval. 
+
+ 
+
+
+
+
+
 # Introduction (Optional, feel free to skip)
 
 Welcome to my first public project! I decided to make this repo because most of my work is confidential for clients, and I can't release those projects. Most of my personal projects were built for my own learning and use, so rather than converting them into public projects, I figured it would be better to just start a new one.
@@ -5,7 +14,6 @@ Welcome to my first public project! I decided to make this repo because most of 
 I've decided to build something to showcase my skills and serve as an example for anyone out there who might be trying to learn or improve their own projects. I will be taking a microservices approach, so you can expect modular and scalable components. This also means that you will need to check the other repos to really get the most out of what I’m doing here. For example, after I get orders working and so forth, I'll focus on setting up some analytics, most likely with a separate repo that focuses solely on analyzing that data.
 
 If you have any questions, concerns, tips, or feedback, feel free to reach out to me.
-
 
 
 

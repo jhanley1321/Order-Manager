@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 from enum import Enum
+import pandas as pd
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
