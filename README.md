@@ -6,6 +6,17 @@ I've decided to build something to showcase my skills and serve as an example fo
 
 If you have any questions, concerns, tips, or feedback, feel free to reach out to me.
 
+
+
+
+
+
+# Running the Main File
+```
+streamlit run main.py
+```
+
+
 # Problem Statement
 
 Making orders across multiple exchanges and asset classes, and switching between live and paper accounts, can be cumbersome.
@@ -26,15 +37,19 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 
 # Current Features
 
-* Place orders (buy or sell, market orders only for now)
-* Track active orders, including which ones are open, partially filled, or filled
-* Demo module that lets you simulate orders and even randomize order fills
-* Control how long and how much of an order is filled
+* Place orders (buy or sell, market orders only for now).
+* Track active orders, including which ones are open, partially filled, or filled.
+* Demo module that lets you simulate orders and even randomize order fills.
+* Control how long and how much of an order is filled.
 
 # Features Roadmap
 
-* Manage orders from multiple exchanges
-* Manage account types (Live, Paper)
+* Manage orders from multiple exchanges.
+* Manage account types (Live, Paper).
+* Add a Docker container for deployment and testing.
+* Add MongoDB option for storing orders.
+* Add Redis layer for cahing.
+* Add specific support for Azure  (AWS, and GCP will come later).
 
 
 # Conventional Commit Types

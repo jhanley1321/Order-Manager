@@ -24,6 +24,8 @@ class OrderConfig:
     ticker_id: int = 0
     order_quantity: float = 0.0
     order_price: float = 0.0
+    exchange_id: int = 0
+    exchange_id: int = 0
 
 @dataclass
 class OrderFill:
@@ -89,6 +91,10 @@ class Order:
     @property
     def order_price(self) -> float:
         return self.config.order_price
+
+    @property
+    def exchange_id(self) -> int:
+        return self.config.exchange_id
 
     def _update_status(self) -> None:
         """Updates the order status based on fills"""
@@ -168,6 +174,7 @@ class OrderManager:
             order_number = self.orders.index(order) + 1
             print(f"\nOrder #{order_number}:")
             print(f"  Ticker ID: {order.ticker_id}")
+            print(f"  Exchange ID: {order.exchange_id}")
             print(f"  Original Quantity: {order.quantity}")
             print(f"  Order Price: {order.order_price}")
             print(f"  Created At: {order.created_at}")
@@ -191,6 +198,7 @@ class OrderManager:
             order_data = {
                 "order_number": self.orders.index(order) + 1,
                 "ticker_id": order.ticker_id,
+                "exchange_id": order.exchange_id,
                 "original_quantity": order.quantity,
                 "order_price": order.order_price,
                 "created_at": str(order.created_at),
@@ -243,7 +251,8 @@ class OrderManager:
                 config = OrderConfig(
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
-                    order_price=order_data["order_price"]
+                    order_price=order_data["order_price"],
+                    exchange_id=order_data["exchange_id"]
                 )
 
                 # Create a new order with the saved order number
