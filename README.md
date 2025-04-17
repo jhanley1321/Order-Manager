@@ -47,8 +47,9 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 
 * Place orders (buy or sell, market orders only for now).
 * Track active orders, including which ones are open, partially filled, or filled.
-* Demo module that lets you simulate orders and even randomize order fills.
+* ~~Demo module that lets you simulate orders and even randomize order fills.~~
 * Control how long and how much of an order is filled.
+* Front end page for placing and using order in place of demo (this will likley be moved later).
 
 # Features Roadmap
 

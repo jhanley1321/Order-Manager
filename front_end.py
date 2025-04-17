@@ -25,7 +25,8 @@ def run_order_manager_app():
             exchange_id=exchange_id
         )
         manager.add_order(config)
-        st.sidebar.success("Order added successfully!")
+        manager.save_orders("orders.json")  # Save the orders immediately after adding
+        st.sidebar.success("Order added and saved successfully!")
 
     # Main content for listing orders
     st.header("Current Orders")
@@ -136,21 +137,7 @@ def run_order_manager_app():
         df = pd.DataFrame(orders_data)
         st.dataframe(df)
 
-        # Display fill history for each order
-        for order in manager.orders:
-            if order.fills:
-                st.subheader(f"Fill History for Order #{manager.orders.index(order) + 1}")
-                fills_data = []
-                for fill in order.fills:
-                    fills_data.append({
-                        'Fill Quantity': fill.fill_quantity,
-                        'Fill Price': fill.fill_price,
-                        'Filled At': fill.filled_at
-                    })
-                fills_df = pd.DataFrame(fills_data)
-                st.dataframe(fills_df)
-    else:
-        st.write("No orders found.")
+
 
     # Save and load orders
     st.sidebar.header("Save and Load Orders")
