@@ -7,7 +7,10 @@ import json
 import os
 import pathlib
 from enum import Enum
+<<<<<<< Updated upstream
 import pandas as pd
+=======
+>>>>>>> Stashed changes
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +28,11 @@ class OrderConfig:
     ticker_id: int = 0
     order_quantity: float = 0.0
     order_price: float = 0.0
+<<<<<<< Updated upstream
     exchange_id: int = 0
     exchange_id: int = 0
+=======
+>>>>>>> Stashed changes
 
 @dataclass
 class OrderFill:
@@ -38,15 +44,27 @@ class OrderFill:
 class Order:
     """Represents a single trading order"""
 
+<<<<<<< Updated upstream
     def __init__(self, config: OrderConfig):
+=======
+    def __init__(self, order_number: int, config: OrderConfig):
+        self.order_number = order_number
+>>>>>>> Stashed changes
         self.config = config
         self.created_at = datetime.now()
         self.fills: List[OrderFill] = []
         self._status = OrderStatus.OPEN
+<<<<<<< Updated upstream
         logger.info(f"Order created with status: {self._status.value}")
 
     def __del__(self):
         logger.info("Order destroyed")
+=======
+        logger.info(f"Order #{self.order_number} created with status: {self._status.value}")
+
+    def __del__(self):
+        logger.info(f"Order #{self.order_number} destroyed")
+>>>>>>> Stashed changes
 
     @property
     def status(self) -> OrderStatus:
@@ -93,15 +111,22 @@ class Order:
     def order_price(self) -> float:
         return self.config.order_price
 
+<<<<<<< Updated upstream
     @property
     def exchange_id(self) -> int:
         return self.config.exchange_id
 
+=======
+>>>>>>> Stashed changes
     def _update_status(self) -> None:
         """Updates the order status based on fills"""
         if self.filled_quantity >= self.quantity:
             self._status = OrderStatus.FILLED
+<<<<<<< Updated upstream
             logger.info(f"Order is now completely filled")
+=======
+            logger.info(f"Order #{self.order_number} is now completely filled")
+>>>>>>> Stashed changes
         elif self.fills:
             self._status = OrderStatus.PARTIALLY_FILLED
         else:
@@ -110,7 +135,11 @@ class Order:
     def add_fill(self, price: float, quantity: float) -> None:
         """Adds a new fill to the order"""
         if not self.needs_fills:
+<<<<<<< Updated upstream
             raise ValueError("Order is already completely filled")
+=======
+            raise ValueError(f"Order #{self.order_number} is already completely filled")
+>>>>>>> Stashed changes
 
         if quantity > self.remaining_quantity:
             raise ValueError(f"Fill quantity ({quantity}) exceeds remaining quantity ({self.remaining_quantity})")
@@ -118,22 +147,33 @@ class Order:
         fill = OrderFill(price, quantity)
         self.fills.append(fill)
         self._update_status()
+<<<<<<< Updated upstream
         logger.info(f"Order received fill: {quantity} @ {price}. Status: {self._status.value}")
+=======
+        logger.info(f"Order #{self.order_number} received fill: {quantity} @ {price}. Status: {self._status.value}")
+>>>>>>> Stashed changes
 
 class OrderManager:
     """Manages a collection of trading orders"""
 
     def __init__(self, data_folder: str = "Data"):
         self.orders: List[Order] = []
+<<<<<<< Updated upstream
         self.next_order_number = 1  # Default to 1 for new instances with no orders
+=======
+        self.next_order_number = 1
+>>>>>>> Stashed changes
         self.data_folder = data_folder
         self._ensure_data_folder_exists()
         logger.info("OrderManager created")
 
+<<<<<<< Updated upstream
         # Automatically load orders when creating the manager
         # This ensures we have the correct next_order_number right from initialization
         self.load_orders()
 
+=======
+>>>>>>> Stashed changes
     def __del__(self):
         logger.info("OrderManager destroyed")
 
@@ -144,7 +184,11 @@ class OrderManager:
 
     def add_order(self, config: OrderConfig) -> Order:
         """Creates and adds a new order with the given configuration"""
+<<<<<<< Updated upstream
         new_order = Order(config)
+=======
+        new_order = Order(self.next_order_number, config)
+>>>>>>> Stashed changes
         self.orders.append(new_order)
         logger.info(f"Added Order #{self.next_order_number}")
         self.next_order_number += 1
@@ -153,7 +197,11 @@ class OrderManager:
     def get_order(self, order_number: int) -> Order:
         """Retrieves an order by its order number"""
         for order in self.orders:
+<<<<<<< Updated upstream
             if order_number == self.orders.index(order) + 1:
+=======
+            if order.order_number == order_number:
+>>>>>>> Stashed changes
                 return order
         raise ValueError(f"Order #{order_number} not found")
 
@@ -172,10 +220,15 @@ class OrderManager:
     def list_orders(self) -> None:
         """Prints all current orders"""
         for order in self.orders:
+<<<<<<< Updated upstream
             order_number = self.orders.index(order) + 1
             print(f"\nOrder #{order_number}:")
             print(f"  Ticker ID: {order.ticker_id}")
             print(f"  Exchange ID: {order.exchange_id}")
+=======
+            print(f"\nOrder #{order.order_number}:")
+            print(f"  Ticker ID: {order.ticker_id}")
+>>>>>>> Stashed changes
             print(f"  Original Quantity: {order.quantity}")
             print(f"  Order Price: {order.order_price}")
             print(f"  Created At: {order.created_at}")
@@ -197,9 +250,14 @@ class OrderManager:
 
         for order in self.orders:
             order_data = {
+<<<<<<< Updated upstream
                 "order_number": self.orders.index(order) + 1,
                 "ticker_id": order.ticker_id,
                 "exchange_id": order.exchange_id,
+=======
+                "order_number": order.order_number,
+                "ticker_id": order.ticker_id,
+>>>>>>> Stashed changes
                 "original_quantity": order.quantity,
                 "order_price": order.order_price,
                 "created_at": str(order.created_at),
@@ -221,6 +279,7 @@ class OrderManager:
 
         with open(file_path, 'w') as file:
             json.dump(orders_data, file, indent=4)
+<<<<<<< Updated upstream
             logger.info(f"Orders saved to {file_path}")
 
     def load_orders(self, filename: str = "orders.json") -> bool:
@@ -285,16 +344,27 @@ class OrderManager:
         except Exception as e:
             logger.error(f"Error loading orders: {e}")
             return False
+=======
+        logger.info(f"Orders saved to {file_path}")
+
+>>>>>>> Stashed changes
 
 def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
     """
     Wrapper function to run the order manager with a list of orders
 
     Args:
+<<<<<<< Updated upstream
     orders_to_process: List of OrderConfig objects to process
 
     Returns:
     OrderManager: The manager instance with processed orders
+=======
+        orders_to_process: List of OrderConfig objects to process
+
+    Returns:
+        OrderManager: The manager instance with processed orders
+>>>>>>> Stashed changes
     """
     manager = OrderManager()
 
