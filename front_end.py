@@ -29,44 +29,45 @@ def run_order_manager_app():
             exchange_id=exchange_id
         )
         manager.add_order(config)
-        st.sidebar.success("Order added successfully!")
+        manager.save_orders("orders.json")  # Save the orders immediately after adding
+        st.sidebar.success("Order added and saved successfully!")
 
     # Main content for listing orders
     st.header("Current Orders")
-    if manager.orders:
-        # Create DataFrame for orders
-        orders_data = []
-        for order in manager.orders:
-            order_data = {
-                'Order #': manager.orders.index(order) + 1,
-                'Ticker ID': order.ticker_id,
-                'Exchange ID': order.exchange_id,
-                'Original Quantity': order.quantity,
-                'Order Price': order.order_price,
-                'Created At': order.created_at,
-                'Status': order.status.value,
-                'Needs Fills': 'Yes' if order.needs_fills else 'No',
-                'Filled Quantity': order.filled_quantity,
-                'Remaining Quantity': order.remaining_quantity,
-                'Average Fill Price': order.average_fill_price if order.fills else '-'
-            }
-            orders_data.append(order_data)
+    # if manager.orders:
+    #     # Create DataFrame for orders
+    #     orders_data = []
+    #     for order in manager.orders:
+    #         order_data = {
+    #             'Order #': manager.orders.index(order) + 1,
+    #             'Ticker ID': order.ticker_id,
+    #             'Exchange ID': order.exchange_id,
+    #             'Original Quantity': order.quantity,
+    #             'Order Price': order.order_price,
+    #             'Created At': order.created_at,
+    #             'Status': order.status.value,
+    #             'Needs Fills': 'Yes' if order.needs_fills else 'No',
+    #             'Filled Quantity': order.filled_quantity,
+    #             'Remaining Quantity': order.remaining_quantity,
+    #             'Average Fill Price': order.average_fill_price if order.fills else '-'
+    #         }
+    #         orders_data.append(order_data)
 
-        df = pd.DataFrame(orders_data)
-        st.dataframe(df)
+    df = manager.get_orders_as_dataframe()
+    st.dataframe(df)
 
 
 
-    # Save and load orders
-    st.sidebar.header("Save and Load Orders")
-    save_orders_button = st.sidebar.button("Save Orders")
-    load_orders_button = st.sidebar.button("Load Orders")
+    # # Save and load orders
+    # st.sidebar.header("Save and Load Orders")
+    # save_orders_button = st.sidebar.button("Save Orders")
+    # load_orders_button = st.sidebar.button("Load Orders")
 
-    if save_orders_button:
-        manager.save_orders("orders.json")
-        st.sidebar.success("Orders saved successfully!")
+    # if save_orders_button:
+    #     manager.save_orders("orders.json")
+    #     st.sidebar.success("Orders saved successfully!")
 
-    if load_orders_button:
-        manager.load_orders("orders.json")
-        st.sidebar.success("Orders loaded successfully!")
+    # if load_orders_button:
+    #     manager.load_orders("orders.json")
+    #     st.sidebar.success("Orders loaded successfully!")
 
