@@ -286,6 +286,37 @@ class OrderManager:
             logger.error(f"Error loading orders: {e}")
             return False
 
+    def get_orders_as_dataframe(self, filename: str = "orders.json") -> pd.DataFrame:
+        """
+        Args:
+        filename: The name of the JSON file containing saved orders
+        
+        Returns:
+        pd.DataFrame: pandas data frame of the orders by  reading from the JSON file
+        
+        """
+        file_path = os.path.join(self.data_folder, filename)
+
+        if not os.path.exists(file_path):
+            logger.warning(f"No saved orders file found at {file_path}")
+            return pd.DataFrame()
+
+        try:
+            with open(file_path, 'r') as file:
+                orders_data = json.load(file)
+
+            orders_df = pd.DataFrame(orders_data)
+            orders_df['created_at'] = pd.to_datetime(orders_df['created_at'])
+            for idx, row in orders_df.iterrows():
+                if row['fills']:
+                    orders_df.at[idx, 'fills'] = pd.DataFrame(row['fills'])
+
+            return orders_df
+
+        except Exception as e:
+            logger.error(f"Error converting orders to DataFrame: {e}")
+            return pd.DataFrame()
+
 def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
     """
     Wrapper function to run the order manager with a list of orders
