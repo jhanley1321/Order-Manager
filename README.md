@@ -1,6 +1,10 @@
 # WIP Please refer to the test branch
 You should consider this branch a WIP and focus on the test branch until further notice. 
 
+# Overview
+This project is an order management system built using a microservices architecture. It demonstrates placing and tracking orders, simulating order fills, and managing data storage and retrieval. 
+
+
 
 # Introduction (Optional, feel free to skip)
 
