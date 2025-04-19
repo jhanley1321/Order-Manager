@@ -30,6 +30,29 @@ If you want to use it with a front end, then simply run:
 streamlit run front_end.py
 ```
 
+# How to use
+
+You will first need to create the Order Manager object:
+```
+manager = OrderManager(data_folder="Data")
+```
+data_folder tells the OrderManager class where to look for the data. You can set this to any folder you like. 
+
+To place a single order, use the following:
+```
+order = OrderDetails(ticker_id=1003, order_quantity=150, order_price=60.0, exchange_id=3)
+manager.add_order(order)
+```
+OrderDetails is a class that handles the details of an order, including ticker ID, quantity, price, and exchange ID. These are all required for filling an order so it knows where to place the order as we add more tickers, exchanges, etc. 
+
+If you want to view the orders from the command line, simply run the following command:
+```
+manager.list_orders()
+```
+
+
+
+
 
 # Problem Statement
 
@@ -42,12 +65,12 @@ Build a unified order management system that can track and manage orders across 
 # Scope
 
 Though we will build this to be interoperable with other programs later, the main focus of this program is only order management.  
-We are not concerned with portfolio management, strategies, or anything else, only being able to place and manage our orders.
+We are not concerned with portfolio management, strategies, and so forth. We are only concerned able to place and manage our orders.
 
 # Purpose
 
 This program manages orders across multiple exchanges and platforms. It can be used to place orders across multiple exchanges, and you will be able to place orders on paper or live accounts.  
-I also want to showcase my skills and resourcefulness. Generally, while I will be building this entirely myself, if there is an easier, ready made solution, I will use that and focus on how I can add value. In some cases, such as the order manager, intimately understanding the architecture is important.
+I also want to showcase my skills and resourcefulness. Generally, while I will be building this entirely myself, if there is an easier, ready-made solution, I will use that and focus on how I can add value. In some cases, such as the order manager, intimately understanding the architecture is important.
 
 # Current Features
 
@@ -65,6 +88,15 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 * Add MongoDB option for storing orders.
 * Add Redis layer for cahing.
 * Add specific support for Azure  (AWS, and GCP will come later).
+
+
+
+
+
+
+
+
+
 
 
 # Conventional Commit Types
