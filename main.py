@@ -2,7 +2,7 @@
 import json
 import os
 from datetime import datetime
-from order_manager import OrderManager, OrderConfig, OrderStatus, Order, OrderFill
+from order_manager import OrderManager, OrderDetails, OrderStatus, Order, OrderFill
 from front_end import run_order_manager_app
 
 def main():
@@ -11,14 +11,14 @@ def main():
 
     # Define some order configurations
     orders_to_process = [
-        OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00, exchange_id=1),
-        OrderConfig(ticker_id=1002, order_quantity=200, order_price=75.00, exchange_id=2),
-        OrderConfig(ticker_id=1003, order_quantity=150, order_price=60.00, exchange_id=3)
+        OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.0, exchange_id=1),
+        OrderDetails(ticker_id=1002, order_quantity=200, order_price=75.0, exchange_id=2),
+        OrderDetails(ticker_id=1003, order_quantity=150, order_price=60.0, exchange_id=3)
     ]
 
     # Add orders to the manager
-    for order_config in orders_to_process:
-        manager.add_order(order_config)
+    for order_details in orders_to_process:
+        manager.add_order(order_details)
 
     # Fill some orders
     manager.fill_order(1, 49.95, 60)  # Partial fill
@@ -37,11 +37,44 @@ def main():
 
     # List all orders again to verify loading
     manager.list_orders()
+    print(manager.get_orders_as_dataframe())
+
+
+def main():
+     # Create an instance of OrderManager
+    manager = OrderManager(data_folder="Data")
+   
+    
+    # set order details
+    order1 = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.0, exchange_id=1)
+    
+    # Place Orders
+    manager.add_order(order1)
+    
+   
+    # Fill Orders
+    manager.fill_order(order_number=1, fill_price=49.95, fill_quantity=60)
+    manager.fill_order(order_number=1, fill_price=50.05, fill_quantity=40)
+
+
+    # Append orders
+    # manager.append_orders("orders.json")
+   
+   
+   
+   
+    # manager.list_orders()
+    
+    # Display Order Options (pickone at a time)
+    # manager.list_orders() # Displays
+    # print(manager.get_orders_as_dataframe())   # view as a dataframe
+
+
 
 
 
 
 
 if __name__ == '__main__':
-    # main()
-    run_order_manager_app()
+    main()
+   
