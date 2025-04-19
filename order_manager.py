@@ -20,7 +20,7 @@ class OrderStatus(Enum):
     FILLED = "Filled"
 
 @dataclass
-class OrderConfig:
+class OrderDetails:
     """Configuration for creating trading orders"""
     ticker_id: int = 0
     order_quantity: float = 0.0
@@ -38,7 +38,7 @@ class OrderFill:
 class Order:
     """Represents a single trading order"""
 
-    def __init__(self, config: OrderConfig):
+    def __init__(self, config: OrderDetails):
         self.config = config
         self.created_at = datetime.now()
         self.fills: List[OrderFill] = []
@@ -142,7 +142,7 @@ class OrderManager:
         pathlib.Path(self.data_folder).mkdir(parents=True, exist_ok=True)
         logger.info(f"Using data folder: {self.data_folder}")
 
-    def add_order(self, config: OrderConfig) -> Order:
+    def add_order(self, config: OrderDetails) -> Order:
         """Creates and adds a new order with the given configuration"""
         new_order = Order(config)
         self.orders.append(new_order)
@@ -249,7 +249,7 @@ class OrderManager:
             highest_order_num = 0
 
             for order_data in orders_data:
-                config = OrderConfig(
+                config = OrderDetails(
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
                     order_price=order_data["order_price"],
@@ -317,12 +317,12 @@ class OrderManager:
             logger.error(f"Error converting orders to DataFrame: {e}")
             return pd.DataFrame()
 
-def run_order_manager(orders_to_process: List[OrderConfig]) -> OrderManager:
+def run_order_manager(orders_to_process: List[OrderDetails]) -> OrderManager:
     """
     Wrapper function to run the order manager with a list of orders
 
     Args:
-    orders_to_process: List of OrderConfig objects to process
+    orders_to_process: List of OrderDetails objects to process
 
     Returns:
     OrderManager: The manager instance with processed orders

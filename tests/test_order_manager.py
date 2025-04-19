@@ -1,6 +1,6 @@
 # tests/test_order_manager.py
 import unittest
-from order_manager import OrderManager, OrderConfig, OrderStatus
+from order_manager import OrderManager, OrderDetails, OrderStatus
 import os
 import shutil
 
@@ -17,7 +17,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_order_creation(self):
         """Test creating a new order"""
-        config = OrderConfig(
+        config = OrderDetails(
             ticker_id=1001,
             order_quantity=100,
             order_price=50.00
@@ -32,7 +32,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_order_filling(self):
         """Test filling an order"""
-        config = OrderConfig(
+        config = OrderDetails(
             ticker_id=1001,
             order_quantity=100,
             order_price=50.00
@@ -54,7 +54,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_average_fill_price(self):
         """Test calculation of average fill price"""
-        config = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
+        config = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.00)
         order = self.manager.add_order(config)
 
         self.manager.fill_order(1, 49.00, 60)  # 2940
@@ -65,7 +65,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_overfill_prevention(self):
         """Test that orders cannot be overfilled"""
-        config = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
+        config = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.00)
         order = self.manager.add_order(config)
 
         with self.assertRaises(ValueError):
@@ -73,7 +73,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_fill_completed_order(self):
         """Test attempting to fill a completed order"""
-        config = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
+        config = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.00)
         order = self.manager.add_order(config)
 
         # Complete the order
@@ -89,8 +89,8 @@ class TestOrderManager(unittest.TestCase):
     def test_get_open_orders(self):
         """Test retrieving open orders"""
         # Add two orders
-        config1 = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
-        config2 = OrderConfig(ticker_id=1002, order_quantity=200, order_price=75.00)
+        config1 = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.00)
+        config2 = OrderDetails(ticker_id=1002, order_quantity=200, order_price=75.00)
 
         order1 = self.manager.add_order(config1)
         order2 = self.manager.add_order(config2)
@@ -105,7 +105,7 @@ class TestOrderManager(unittest.TestCase):
 
     def test_order_persistence(self):
         """Test saving and loading orders"""
-        config = OrderConfig(ticker_id=1001, order_quantity=100, order_price=50.00)
+        config = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.00)
         order = self.manager.add_order(config)
 
         self.manager.fill_order(1, 49.95, 60)

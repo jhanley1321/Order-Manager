@@ -1,5 +1,5 @@
 import streamlit as st
-from order_manager import OrderManager, OrderConfig
+from order_manager import OrderManager, OrderDetails
 import os
 import pandas as pd
 
@@ -22,7 +22,7 @@ def run_order_manager_app():
     add_order_button = st.sidebar.button("Add Order")
 
     if add_order_button:
-        config = OrderConfig(
+        config = OrderDetails(
             ticker_id=ticker_id,
             order_quantity=order_quantity,
             order_price=order_price,
@@ -74,3 +74,9 @@ def run_order_manager_app():
     df = manager.get_orders_as_dataframe()
     st.dataframe(df)
 
+
+
+
+
+if __name__ == '__main__':
+    run_order_manager_app()
