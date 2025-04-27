@@ -76,7 +76,7 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 * Track active orders, including which ones are open, partially filled, or filled.
 * ~~Demo module that lets you simulate orders and even randomize order fills.~~
 * Control how long and how much of an order is filled.
-* Front end page for placing and using orders in place of demo (deprecated, but you can still technically use it).
+* ~~Front end page for placing and using orders in place of demo (deprecated, but you can still technically use it).~~
 * Add a Docker container for deployment and testing.
 
 # Features Roadmap

@@ -1,0 +1,19 @@
+# Ignore git files and folders
+.git
+.gitignore
+
+# Ignore license and documentation
+LICENSE.txt
+README.md
+
+# Ignore batch files (if not needed in the image)
+*.bat
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore editor settings
+.vscode/
+.idea/
