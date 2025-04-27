@@ -18,15 +18,16 @@ class OrderStatus(Enum):
     OPEN = "Open"
     PARTIALLY_FILLED = "Partially Filled"
     FILLED = "Filled"
+   
 
 @dataclass
 class OrderDetails:
-    """Configuration for creating trading orders"""
+    """detailsuration for creating trading orders"""
     ticker_id: int = 0
     order_quantity: float = 0.0
     order_price: float = 0.0
     exchange_id: int = 0
-    exchange_id: int = 0
+
 
 @dataclass
 class OrderFill:
@@ -38,42 +39,44 @@ class OrderFill:
 class Order:
     """Represents a single trading order"""
 
-    def __init__(self, config: OrderDetails):
-        self.config = config
-        self.created_at = datetime.now()
-        self.fills: List[OrderFill] = []
-        self._status = OrderStatus.OPEN
-        logger.info(f"Order created with status: {self._status.value}")
+    # Constructor creates an order wtih the given details 
+    def __init__(self, details: OrderDetails):
+        self.details = details
+        self.created_at = datetime.now() # Logs when the 
+        self.fills: List[OrderFill] = [] # List of fills, by default there are no fills until they are filled. 
+        self._status = OrderStatus.OPEN # By default, all orders are open until filled. 
+        logger.info(f"Order created with status: {self._status.value}") # Logs when the object is created
 
+    # Destructor: Destoryts the object 
     def __del__(self):
         logger.info("Order destroyed")
 
-    @property
+    @property # Getter
     def status(self) -> OrderStatus:
         """Returns the current status of the order"""
         return self._status
 
-    @property
+    @property # Getter
     def is_filled(self) -> bool:
         """Returns True if the order is completely filled"""
         return self._status == OrderStatus.FILLED
 
-    @property
+    @property # Getter
     def needs_fills(self) -> bool:
         """Returns True if the order still needs fills"""
         return self._status != OrderStatus.FILLED
 
-    @property
+    @property # Getter
     def filled_quantity(self) -> float:
         """Returns the total quantity filled so far"""
         return sum(fill.fill_quantity for fill in self.fills)
 
-    @property
+    @property # Getter
     def remaining_quantity(self) -> float:
         """Returns the remaining quantity to be filled"""
         return self.quantity - self.filled_quantity
 
-    @property
+    @property # Getter
     def average_fill_price(self) -> float:
         """Returns the weighted average fill price"""
         if not self.fills:
@@ -81,22 +84,23 @@ class Order:
         total_value = sum(fill.fill_price * fill.fill_quantity for fill in self.fills)
         return total_value / self.filled_quantity
 
-    @property
+    @property # Getter
     def ticker_id(self) -> int:
-        return self.config.ticker_id
+        return self.details.ticker_id
 
-    @property
+    @property # Getter
     def quantity(self) -> float:
-        return self.config.order_quantity
+        return self.details.order_quantity
 
-    @property
+    @property # Getter
     def order_price(self) -> float:
-        return self.config.order_price
+        return self.details.order_price
 
-    @property
+    @property # Getter
     def exchange_id(self) -> int:
-        return self.config.exchange_id
+        return self.details.exchange_id
 
+    # Updates the status on an order
     def _update_status(self) -> None:
         """Updates the order status based on fills"""
         if self.filled_quantity >= self.quantity:
@@ -107,6 +111,7 @@ class Order:
         else:
             self._status = OrderStatus.OPEN
 
+    # Adds a fill to the order 
     def add_fill(self, price: float, quantity: float) -> None:
         """Adds a new fill to the order"""
         if not self.needs_fills:
@@ -123,6 +128,7 @@ class Order:
 class OrderManager:
     """Manages a collection of trading orders"""
 
+    
     def __init__(self, data_folder: str = "Data"):
         self.orders: List[Order] = []
         self.next_order_number = 1  # Default to 1 for new instances with no orders
@@ -142,9 +148,9 @@ class OrderManager:
         pathlib.Path(self.data_folder).mkdir(parents=True, exist_ok=True)
         logger.info(f"Using data folder: {self.data_folder}")
 
-    def add_order(self, config: OrderDetails) -> Order:
-        """Creates and adds a new order with the given configuration"""
-        new_order = Order(config)
+    def add_order(self, details: OrderDetails) -> Order:
+        """Creates and adds a new order with the given detailsuration"""
+        new_order = Order(details)
         self.orders.append(new_order)
         logger.info(f"Added Order #{self.next_order_number}")
         self.next_order_number += 1
@@ -156,6 +162,46 @@ class OrderManager:
             if order_number == self.orders.index(order) + 1:
                 return order
         raise ValueError(f"Order #{order_number} not found")
+
+    def append_orders(self, filename: str = "orders.json") -> None:
+        """Appends current orders to existing JSON file"""
+        file_path = os.path.join(self.data_folder, filename)
+        existing_orders = []
+
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                existing_orders = json.load(file)
+
+        orders_data = []
+        for order in self.orders:
+            order_data = {
+                "order_number": self.orders.index(order) + 1,
+                "ticker_id": order.ticker_id,
+                "exchange_id": order.exchange_id,
+                "original_quantity": order.quantity,
+                "order_price": order.order_price,
+                "created_at": str(order.created_at),
+                "status": order.status.value,
+                "needs_fills": order.needs_fills,
+                "filled_quantity": order.filled_quantity,
+                "remaining_quantity": order.remaining_quantity,
+                "average_fill_price": order.average_fill_price,
+                "fills": [
+                    {
+                        "fill_price": fill.fill_price,
+                        "fill_quantity": fill.fill_quantity,
+                        "filled_at": str(fill.filled_at)
+                    }
+                    for fill in order.fills
+                ]
+            }
+            orders_data.append(order_data)
+
+        existing_orders.extend(orders_data)
+
+        with open(file_path, 'w') as file:
+            json.dump(existing_orders, file, indent=4)
+            logger.info(f"Orders appended to {file_path}")
 
     def fill_order(self, order_number: int, fill_price: float, fill_quantity: float) -> None:
         """Adds a fill to an existing order"""
@@ -249,7 +295,7 @@ class OrderManager:
             highest_order_num = 0
 
             for order_data in orders_data:
-                config = OrderDetails(
+                details = OrderDetails(
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
                     order_price=order_data["order_price"],
@@ -257,7 +303,7 @@ class OrderManager:
                 )
 
                 # Create a new order with the saved order number
-                new_order = Order(config)
+                new_order = Order(details)
 
                 # Add fills by directly adding to the fills list
                 for fill_data in order_data["fills"]:
@@ -329,7 +375,7 @@ def run_order_manager(orders_to_process: List[OrderDetails]) -> OrderManager:
     """
     manager = OrderManager()
 
-    for order_config in orders_to_process:
-        manager.add_order(order_config)
+    for order_details in orders_to_process:
+        manager.add_order(order_details)
 
     return manager
