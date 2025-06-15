@@ -65,6 +65,15 @@ If you want to view the orders from the command line, simply run the following c
 manager.list_orders()
 ```
 
+
+# How to use (Front End)
+
+run the following command in the command line to start it
+
+```
+streamlit run main_frontend.py
+```
+
 # Purpose
 
 This program manages orders across multiple exchanges and platforms. It can be used to place orders across multiple exchanges, and you will be able to place orders on paper or live accounts.  
@@ -76,16 +85,27 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 * Track active orders, including which ones are open, partially filled, or filled.
 * ~~Demo module that lets you simulate orders and even randomize order fills.~~
 * Control how long and how much of an order is filled.
-* ~~Front end page for placing and using orders in place of demo (deprecated, but you can still technically use it).~~
+* Front end page for placing and using orders in place of demo (deprecated, but you can still technically use it).~~
 * Add a Docker container for deployment and testing.
 
 # Features Roadmap
 
 * Manage orders from multiple exchanges.
 * Manage account types (Live, Paper).
-* Add MS SQL/Postgres option for storing orders.
+* Add PSQL/Timescale DB option for storing orders.
 * Add Redis layer for caching.
-* Add specific support for Azure (AWS and GCP will come later).
+* Add specific  cloud support for Azure (AWS and GCP will come later).
+* Add Order-Maximizer
+* Add support for Order Types
+* Add support for custom order Types (write your own logic for how the order is placed, this is not a strategy function)
+* Add cost basis optimizer 
+* Add Capital gains tax optitmizer
+* Add a cost basis/Cpaitla gains optimzier (Optimize the best combintion of the two.)
+
+
+# Tech Stack
+* Python
+* Docker
 
 # Conventional Commit Types
 

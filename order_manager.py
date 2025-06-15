@@ -129,7 +129,7 @@ class OrderManager:
     """Manages a collection of trading orders"""
 
     
-    def __init__(self, data_folder: str = "Data"):
+    def __init__(self, data_folder: str = "data"):
         self.orders: List[Order] = []
         self.next_order_number = 1  # Default to 1 for new instances with no orders
         self.data_folder = data_folder

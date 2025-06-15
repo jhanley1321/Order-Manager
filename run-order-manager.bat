@@ -4,3 +4,7 @@ docker rm -f order-manager-container >nul 2>&1
 
 REM Run the container with the desired name
 docker run --name order-manager-container my-python-app
+
+
+REM Pause the script to keep the window open
+pause
