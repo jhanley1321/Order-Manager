@@ -99,8 +99,8 @@ I also want to showcase my skills and resourcefulness. Generally, while I will b
 * Add support for Order Types
 * Add support for custom order Types (write your own logic for how the order is placed, this is not a strategy function)
 * Add cost basis optimizer 
-* Add Capital gains tax optitmizer
-* Add a cost basis/Cpaitla gains optimzier (Optimize the best combintion of the two.)
+* Add Capital gains tax optimizer
+* Add a cost basis/Capital gains optimizer (Optimize the best combination of the two.)
 
 
 # Tech Stack

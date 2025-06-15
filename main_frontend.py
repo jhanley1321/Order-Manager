@@ -29,7 +29,7 @@ if st.button("Add Order"):
     manager.add_order(order_details)
     manager.save_orders("orders.json")  # Save orders after adding
     st.success("Order added successfully!")
-    st.experimental_rerun()  # Refresh the page to show the updated orders
+    st.rerun()  # Refresh the page to show the updated orders
 
 # Fill Order
 st.header("Fill Order")
@@ -42,7 +42,7 @@ if st.button("Fill Order"):
         manager.fill_order(order_number=order_number, fill_price=fill_price, fill_quantity=fill_quantity)
         manager.save_orders("orders.json")  # Save orders after filling
         st.success("Order filled successfully!")
-        st.experimental_rerun()  # Refresh the page to show the updated orders
+        st.rerun()  # Refresh the page to show the updated orders
     except ValueError as e:
         st.error(str(e))
 

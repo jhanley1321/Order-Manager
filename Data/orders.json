@@ -5,7 +5,7 @@
         "exchange_id": 1,
         "original_quantity": 100,
         "order_price": 50.0,
-        "created_at": "2025-06-14 21:15:27.004635",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Filled",
         "needs_fills": false,
         "filled_quantity": 100,
@@ -15,12 +15,12 @@
             {
                 "fill_price": 49.95,
                 "fill_quantity": 60,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             },
             {
                 "fill_price": 50.05,
                 "fill_quantity": 40,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             }
         ]
     },
@@ -30,7 +30,7 @@
         "exchange_id": 1,
         "original_quantity": 100,
         "order_price": 50.0,
-        "created_at": "2025-06-14 21:15:27.005627",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
@@ -44,7 +44,7 @@
         "exchange_id": 1,
         "original_quantity": 100,
         "order_price": 50.0,
-        "created_at": "2025-06-14 21:15:27.005627",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
@@ -58,7 +58,7 @@
         "exchange_id": 1,
         "original_quantity": 100,
         "order_price": 50.0,
-        "created_at": "2025-06-14 21:15:27.005627",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
@@ -72,7 +72,7 @@
         "exchange_id": 1,
         "original_quantity": 10.0,
         "order_price": 100.0,
-        "created_at": "2025-06-14 21:15:27.005627",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
@@ -86,7 +86,7 @@
         "exchange_id": 0,
         "original_quantity": 1.0,
         "order_price": 1.0,
-        "created_at": "2025-06-14 21:15:27.006582",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Filled",
         "needs_fills": false,
         "filled_quantity": 1.0,
@@ -96,22 +96,22 @@
             {
                 "fill_price": 1.0,
                 "fill_quantity": 0.25,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             },
             {
                 "fill_price": 1.0,
                 "fill_quantity": 0.25,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             },
             {
                 "fill_price": 1.0,
                 "fill_quantity": 0.25,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             },
             {
                 "fill_price": 1.0,
                 "fill_quantity": 0.25,
-                "filled_at": "2025-06-14 21:14:41.485289"
+                "filled_at": "2025-06-14 21:32:23.238111"
             }
         ]
     },
@@ -121,7 +121,7 @@
         "exchange_id": 0,
         "original_quantity": 0.0,
         "order_price": 0.0,
-        "created_at": "2025-06-14 21:15:27.006582",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Filled",
         "needs_fills": false,
         "filled_quantity": 0,
@@ -135,7 +135,7 @@
         "exchange_id": 0,
         "original_quantity": 10.0,
         "order_price": 100.0,
-        "created_at": "2025-06-14 21:15:27.007582",
+        "created_at": "2025-06-14 21:32:29.067235",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
@@ -149,7 +149,21 @@
         "exchange_id": 0,
         "original_quantity": 0.0,
         "order_price": 0.0,
-        "created_at": "2025-06-14 21:15:27.022480",
+        "created_at": "2025-06-14 21:32:29.069122",
+        "status": "Filled",
+        "needs_fills": false,
+        "filled_quantity": 0,
+        "remaining_quantity": 0.0,
+        "average_fill_price": 0.0,
+        "fills": []
+    },
+    {
+        "order_number": 10,
+        "ticker_id": 0,
+        "exchange_id": 0,
+        "original_quantity": 0.0,
+        "order_price": 0.0,
+        "created_at": "2025-06-14 21:32:29.092497",
         "status": "Open",
         "needs_fills": true,
         "filled_quantity": 0,
