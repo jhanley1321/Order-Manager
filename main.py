@@ -7,7 +7,7 @@ from order_manager import OrderManager, OrderDetails, OrderStatus, Order, OrderF
 
 
 
-
+# Sample order 
 def main():
      # Create an instance of OrderManager
     manager = OrderManager(data_folder="Data")
@@ -50,7 +50,31 @@ def main():
 
 
 
+def main():
+    # Create an instance of OrderManager
+    manager = OrderManager(data_folder="Data")
+    
+    # Set order details with transaction fee
+    order1 = OrderDetails(
+        ticker_id=1001, 
+        order_quantity=100, 
+        order_price=50.0, 
+        exchange_id=1, 
+        transaction_fee=2.5  # Example transaction fee
+    )
+    
+    # Place Orders
+    manager.add_order(order1)
+    
+    # Fill Orders
+    manager.fill_order(order_number=1, fill_price=50, fill_quantity=70)
+    manager.fill_order(order_number=1, fill_price=50, fill_quantity=30)
+    
+    # Save orders to a JSON file
+    manager.save_orders("orders.json")
 
+    # Display orders as a DataFrame
+    print(manager.get_orders_as_dataframe())
 
 
 

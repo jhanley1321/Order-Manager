@@ -22,11 +22,12 @@ class OrderStatus(Enum):
 
 @dataclass
 class OrderDetails:
-    """detailsuration for creating trading orders"""
+    """Details for creating trading orders"""
     ticker_id: int = 0
     order_quantity: float = 0.0
     order_price: float = 0.0
     exchange_id: int = 0
+    transaction_fee: float = 0.0
 
 
 @dataclass
@@ -45,7 +46,7 @@ class Order:
         self.created_at = datetime.now() # Logs when the 
         self.fills: List[OrderFill] = [] # List of fills, by default there are no fills until they are filled. 
         self._status = OrderStatus.OPEN # By default, all orders are open until filled. 
-        logger.info(f"Order created with status: {self._status.value}") # Logs when the object is created
+        logger.info(f"Order created with status: {self._status.value} and transaction fee: {self.details.transaction_fee}") # Logs when the object is created
 
     # Destructor: Destoryts the object 
     def __del__(self):
@@ -100,6 +101,11 @@ class Order:
     def exchange_id(self) -> int:
         return self.details.exchange_id
 
+    @property
+    def transaction_fee(self) -> float:
+        """Returns the transaction fee for the order"""
+        return self.details.transaction_fee
+
     # Updates the status on an order
     def _update_status(self) -> None:
         """Updates the order status based on fills"""
@@ -152,7 +158,7 @@ class OrderManager:
         """Creates and adds a new order with the given detailsuration"""
         new_order = Order(details)
         self.orders.append(new_order)
-        logger.info(f"Added Order #{self.next_order_number}")
+        logger.info(f"Added Order #{self.next_order_number} with transaction fee: {details.transaction_fee}")
         self.next_order_number += 1
         return new_order
 
@@ -186,6 +192,7 @@ class OrderManager:
                 "filled_quantity": order.filled_quantity,
                 "remaining_quantity": order.remaining_quantity,
                 "average_fill_price": order.average_fill_price,
+                "transaction_fee": order.transaction_fee,
                 "fills": [
                     {
                         "fill_price": fill.fill_price,
@@ -225,6 +232,7 @@ class OrderManager:
             print(f"  Original Quantity: {order.quantity}")
             print(f"  Order Price: {order.order_price}")
             print(f"  Created At: {order.created_at}")
+            print(f"  Transaction Fee: {order.transaction_fee}")
             print(f"  Status: {order.status.value}")
             print(f"  Needs Fills: {'Yes' if order.needs_fills else 'No'}")
             print(f"  Filled Quantity: {order.filled_quantity}")
@@ -299,7 +307,8 @@ class OrderManager:
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
                     order_price=order_data["order_price"],
-                    exchange_id=order_data["exchange_id"]
+                    exchange_id=order_data["exchange_id"],
+                    transaction_fee=order_data["transaction_fee"]
                 )
 
                 # Create a new order with the saved order number
