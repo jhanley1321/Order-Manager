@@ -3,76 +3,112 @@ import json
 import os
 from datetime import datetime
 from order_manager import OrderManager, OrderDetails, OrderStatus, Order, OrderFill
-from front_end import run_order_manager_app
+from frontend import OrderManagerFrontend
 
-def main():
+
+
+
+
+def sample_order1():
     # Create an instance of OrderManager
-    manager = OrderManager(data_folder="Data")
+    manager = OrderManager(data_folder="data")
+    
+    # Set order details with transaction fee
+    order1 = OrderDetails(
+        ticker_id=0, 
+        order_quantity=100, 
+        order_price=50.0, 
+        exchange_id=1, 
+        transaction_fee=2.5  # Example transaction fee
+    )
+    
 
-    # Define some order configurations
-    orders_to_process = [
-        OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.0, exchange_id=1),
-        OrderDetails(ticker_id=1002, order_quantity=200, order_price=75.0, exchange_id=2),
-        OrderDetails(ticker_id=1003, order_quantity=150, order_price=60.0, exchange_id=3)
-    ]
+    order2 = OrderDetails(
+        ticker_id=0, 
+        order_quantity=1000, 
+        order_price=60.0, 
+        exchange_id=1, 
+        transaction_fee=2.5  # Example transaction fee
+    )
 
-    # Add orders to the manager
-    for order_details in orders_to_process:
-        manager.add_order(order_details)
+    order3 = OrderDetails(
+        ticker_id=0, 
+        order_quantity=2000, 
+        order_price=70.0, 
+        exchange_id=1, 
+        transaction_fee=2.5  # Example transaction fee
+    )
+    
+    order4 = OrderDetails(
+        ticker_id=0, 
+        order_quantity=90000, 
+        order_price=70.0, 
+        exchange_id=1, 
+        transaction_fee=2.5  # Example transaction fee
+    )
 
-    # Fill some orders
-    manager.fill_order(1, 49.95, 60)  # Partial fill
-    manager.fill_order(1, 50.05, 40)  # Complete the order
-    manager.fill_order(2, 74.50, 100)  # Partial fill
-    manager.fill_order(3, 60.00, 150)  # Complete the order
 
-    # List all orders
-    manager.list_orders()
+    # load orders test
+    manager.load_orders()
 
-    # Save orders to a file
+    # Place Orders
+    manager.add_order(order1)
+    # # manager.save_orders("orders.json")
+    manager.add_order(order2)
+    # # manager.save_orders("orders.json")
+    manager.add_order(order3)
+    # manager.save_orders("orders.json")
+    # manager.append_orders("orders.json")
+    manager.add_order(order4)
+    
+    
+    # Fill Orders
+    manager.fill_order(order_number=1, fill_price=50, fill_quantity=70)
+    manager.fill_order(order_number=1, fill_price=50, fill_quantity=30)
     manager.save_orders("orders.json")
 
-    # Load orders from a file
-    manager.load_orders("orders.json")
+    manager.fill_order(order_number=2, fill_price=60, fill_quantity=500)
+    manager.fill_order(order_number=2, fill_price=60, fill_quantity=200)
+    manager.fill_order(order_number=2, fill_price=60, fill_quantity=300)
+    manager.save_orders("orders.json")
 
-    # List all orders again to verify loading
-    manager.list_orders()
+    manager.fill_order(order_number=3, fill_price=70, fill_quantity=200)
+    manager.fill_order(order_number=3, fill_price=70, fill_quantity=200)
+    manager.fill_order(order_number=3, fill_price=70, fill_quantity=200)
+    manager.save_orders("orders.json")
+    
+    # Save orders to a JSON file
+    # manager.save_orders("orders.json")
+    # manager.append_orders("orders.json")
+
+    # Display orders as a DataFrame
     print(manager.get_orders_as_dataframe())
 
 
-def main():
-     # Create an instance of OrderManager
-    manager = OrderManager(data_folder="Data")
-   
+
+def sample_order1_fill():
+    # Create an instance of OrderManager
+    manager = OrderManager(data_folder="data")
     
-    # set order details
-    order1 = OrderDetails(ticker_id=1001, order_quantity=100, order_price=50.0, exchange_id=1)
     
-    # Place Orders
-    manager.add_order(order1)
+    manager.load_orders()
     
-   
-    # Fill Orders
-    manager.fill_order(order_number=1, fill_price=49.95, fill_quantity=60)
-    manager.fill_order(order_number=1, fill_price=50.05, fill_quantity=40)
+  
 
-
-    # Append orders
-    # manager.append_orders("orders.json")
-   
-   
-   
-   
-    # manager.list_orders()
     
-    # Display Order Options (pickone at a time)
-    # manager.list_orders() # Displays
-    # print(manager.get_orders_as_dataframe())   # view as a dataframe
+
+    manager.fill_order(order_number=1, fill_price=50, fill_quantity=70)
+    
 
 
 
+def main(run_front_end=True):
+    if run_front_end:
+        frontend = OrderManagerFrontend(data_folder="data")
+        frontend.run_app()
 
-
+    else:
+        sample_order1()
 
 
 if __name__ == '__main__':

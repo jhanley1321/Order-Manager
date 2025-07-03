@@ -8,6 +8,7 @@ import os
 import pathlib
 from enum import Enum
 import pandas as pd
+import random
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,11 +23,12 @@ class OrderStatus(Enum):
 
 @dataclass
 class OrderDetails:
-    """detailsuration for creating trading orders"""
+    """Details for creating trading orders"""
     ticker_id: int = 0
     order_quantity: float = 0.0
     order_price: float = 0.0
     exchange_id: int = 0
+    transaction_fee: float = 0.0
 
 
 @dataclass
@@ -45,7 +47,7 @@ class Order:
         self.created_at = datetime.now() # Logs when the 
         self.fills: List[OrderFill] = [] # List of fills, by default there are no fills until they are filled. 
         self._status = OrderStatus.OPEN # By default, all orders are open until filled. 
-        logger.info(f"Order created with status: {self._status.value}") # Logs when the object is created
+        logger.info(f"Order created with status: {self._status.value} and transaction fee: {self.details.transaction_fee}") # Logs when the object is created
 
     # Destructor: Destoryts the object 
     def __del__(self):
@@ -100,6 +102,11 @@ class Order:
     def exchange_id(self) -> int:
         return self.details.exchange_id
 
+    @property
+    def transaction_fee(self) -> float:
+        """Returns the transaction fee for the order"""
+        return self.details.transaction_fee
+
     # Updates the status on an order
     def _update_status(self) -> None:
         """Updates the order status based on fills"""
@@ -129,7 +136,7 @@ class OrderManager:
     """Manages a collection of trading orders"""
 
     
-    def __init__(self, data_folder: str = "Data"):
+    def __init__(self, data_folder: str = "data"):
         self.orders: List[Order] = []
         self.next_order_number = 1  # Default to 1 for new instances with no orders
         self.data_folder = data_folder
@@ -152,7 +159,7 @@ class OrderManager:
         """Creates and adds a new order with the given detailsuration"""
         new_order = Order(details)
         self.orders.append(new_order)
-        logger.info(f"Added Order #{self.next_order_number}")
+        logger.info(f"Added Order #{self.next_order_number} with transaction fee: {details.transaction_fee}")
         self.next_order_number += 1
         return new_order
 
@@ -186,6 +193,7 @@ class OrderManager:
                 "filled_quantity": order.filled_quantity,
                 "remaining_quantity": order.remaining_quantity,
                 "average_fill_price": order.average_fill_price,
+                "transaction_fee": order.transaction_fee,
                 "fills": [
                     {
                         "fill_price": fill.fill_price,
@@ -225,6 +233,7 @@ class OrderManager:
             print(f"  Original Quantity: {order.quantity}")
             print(f"  Order Price: {order.order_price}")
             print(f"  Created At: {order.created_at}")
+            print(f"  Transaction Fee: {order.transaction_fee}")
             print(f"  Status: {order.status.value}")
             print(f"  Needs Fills: {'Yes' if order.needs_fills else 'No'}")
             print(f"  Filled Quantity: {order.filled_quantity}")
@@ -236,6 +245,121 @@ class OrderManager:
                     print(f"    Fill #{idx}: {fill.fill_quantity} @ {fill.fill_price} ({fill.filled_at})")
                 print(f"  Average Fill Price: {order.average_fill_price}")
 
+   
+# Currently testing
+    def append_order(self, order: Order, filename: str = "orders.json") -> None:
+        """Appends a single order to the JSON file"""
+        file_path = os.path.join(self.data_folder, filename)
+        
+        # Load existing orders from file
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                try:
+                    existing_orders = json.load(file)
+                except json.JSONDecodeError:
+                    existing_orders = []
+        else:
+            existing_orders = []
+
+        # Find the highest existing order number
+        if existing_orders:
+            last_order_number = max(order_data.get("order_number", 0) for order_data in existing_orders)
+        else:
+            last_order_number = 0
+
+        # Prepare the new order data
+        order_data = {
+            "order_number": last_order_number + 1,
+            "ticker_id": order.ticker_id,
+            "exchange_id": order.exchange_id,
+            "original_quantity": order.quantity,
+            "order_price": order.order_price,
+            "created_at": str(order.created_at),
+            "status": order.status.value,
+            "needs_fills": order.needs_fills,
+            "filled_quantity": order.filled_quantity,
+            "remaining_quantity": order.remaining_quantity,
+            "average_fill_price": order.average_fill_price,
+            "transaction_fee": order.transaction_fee,
+            "fills": [
+                {
+                    "fill_price": fill.fill_price,
+                    "fill_quantity": fill.fill_quantity,
+                    "filled_at": str(fill.filled_at)
+                }
+                for fill in order.fills
+            ]
+        }
+
+        # Append the new order and save
+        existing_orders.append(order_data)
+        
+        with open(file_path, 'w') as file:
+            json.dump(existing_orders, file, indent=4)
+            logger.info(f"Order appended to {file_path}. Total orders in file: {len(existing_orders)}")
+
+
+
+
+
+
+    def append_orders(self, filename: str = "orders.json") -> None:
+        file_path = os.path.join(self.data_folder, filename)
+        # Load existing orders from file
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                try:
+                    existing_orders = json.load(file)
+                except json.JSONDecodeError:
+                    existing_orders = []
+        else:
+            existing_orders = []
+
+        # Find the highest existing order number
+        if existing_orders:
+            last_order_number = max(order.get("order_number", 0) for order in existing_orders)
+        else:
+            last_order_number = 0
+
+        # Prepare new orders to append (skip any that are already in the file)
+        new_orders = []
+        for idx, order in enumerate(self.orders):
+            # Optionally, you could check for duplicates here
+            order_data = {
+                "order_number": last_order_number + idx + 1,
+                "ticker_id": order.ticker_id,
+                "exchange_id": order.exchange_id,
+                "original_quantity": order.quantity,
+                "order_price": order.order_price,
+                "created_at": str(order.created_at),
+                "status": order.status.value,
+                "needs_fills": order.needs_fills,
+                "filled_quantity": order.filled_quantity,
+                "remaining_quantity": order.remaining_quantity,
+                "average_fill_price": order.average_fill_price,
+                "transaction_fee": order.transaction_fee,
+                "fills": [
+                    {
+                        "fill_price": fill.fill_price,
+                        "fill_quantity": fill.fill_quantity,
+                        "filled_at": str(fill.filled_at)
+                    }
+                    for fill in order.fills
+                ]
+            }
+            new_orders.append(order_data)
+
+        # Append new orders to existing ones
+        all_orders = existing_orders + new_orders
+
+        # Save back to file
+        with open(file_path, 'w') as file:
+            json.dump(all_orders, file, indent=4)
+   
+   
+   
+   
+   
     def save_orders(self, filename: str = "orders.json") -> None:
         """Saves all orders to a JSON file in the data folder"""
         file_path = os.path.join(self.data_folder, filename)
@@ -299,7 +423,8 @@ class OrderManager:
                     ticker_id=order_data["ticker_id"],
                     order_quantity=order_data["original_quantity"],
                     order_price=order_data["order_price"],
-                    exchange_id=order_data["exchange_id"]
+                    exchange_id=order_data["exchange_id"],
+                    transaction_fee=order_data["transaction_fee"]
                 )
 
                 # Create a new order with the saved order number
@@ -362,6 +487,47 @@ class OrderManager:
         except Exception as e:
             logger.error(f"Error converting orders to DataFrame: {e}")
             return pd.DataFrame()
+
+
+
+
+    def simulate_random_fills(self, order_number: int, fill_price_range: tuple = None) -> None:
+        """
+        Simulates random fills for an order until it is completely filled.
+
+        Args:
+        order_number: The order number to simulate fills for.
+        fill_price_range: A tuple (min_price, max_price) for the range of fill prices. If None, uses the order price.
+        """
+        order = self.get_order(order_number)
+        if not order.needs_fills:
+            logger.warning(f"Order #{order_number} is already filled, ignoring fill request")
+            return
+
+        if fill_price_range is None:
+            fill_price = order.order_price
+        else:
+            fill_price = random.uniform(*fill_price_range)
+
+        while order.needs_fills:
+            fill_quantity = random.uniform(0.1, order.remaining_quantity)
+            order.add_fill(fill_price, fill_quantity)
+            logger.info(f"Simulated fill for Order #{order_number}: {fill_quantity} @ {fill_price}. Status: {order.status.value}")
+
+
+    def clear_orders(self):
+        """Clears all orders from memory and resets the order number."""
+        self.orders = []
+        self.next_order_number = 1 
+
+
+
+
+
+
+
+
+
 
 def run_order_manager(orders_to_process: List[OrderDetails]) -> OrderManager:
     """
